@@ -1,0 +1,99 @@
+App.js
+__________________________________________
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import './App.css';
+import Home from './components/Home';
+import About from './components/About';
+import NavBar from './components/NavBar';
+import Anil from './components/Anil';
+import Filter from './components/Filter';
+import Contact from './components/Contact';
+import Company from './components/Company';
+import Channel from './components/Channel';
+import Other from './components/Other';
+import Login from './components/Login';
+import Protected from './components/Protected';
+
+function App() {
+    return (
+        <div className='App'>
+            <BrowserRouter>
+                <NavBar />
+                <Routes>
+                    <Route path='/' element={<Protected  Component={Home} />} />
+                    <Route path='/login' element={<Login/>} />
+                    <Route path='/about' element={<Protected Component={About} />} />
+                    <Route path='/users/:name' element={<Anil />} />
+                    <Route path='/filter' element={<Protected Component={Filter} />} />
+                    <Route path='/contact' element={<Contact />}>
+                        <Route path='company' element={<Company />} />
+                        <Route path='channel' element={<Channel />} />
+                        <Route path='other' element={<Other />} />
+                    </Route>
+                    <Route path='/*' element={<Navigate to='/' />} />
+                </Routes>
+            </BrowserRouter>
+        </div>
+    );
+}
+
+export default App;
+_______________________________________
+Login.js
+_______________________________________
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+function Login() {
+    const navigate = useNavigate();
+
+    function login() {
+        localStorage.setItem('login', true);  // Corrected from getItem to setItem
+        navigate('/');
+    }
+
+    useEffect(() => {
+        let login = localStorage.getItem('login');
+        //if user is not login then it goes to home page
+        if (login) {
+            navigate('/');
+        }
+    }, [navigate]);  // Added navigate to dependency array
+
+    return (
+        <div>
+            <h1>Login Page</h1>
+            <input type="text" placeholder="Username" /> <br /> <br />
+            <input type="password" placeholder="Password" /> <br /> <br />
+            <button onClick={login}>Login</button>
+        </div>
+    );
+}
+
+export default Login;
+____________________________________________________
+Protected.js
+___________________________________________________
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+
+function Protected(props) {
+    const { Component } = props;
+    const navigate = useNavigate();
+
+    useEffect(()=>{
+        let login = localStorage.getItem('login');
+        if(!login){
+            navigate('/login');
+        }
+    })
+    return (
+        <div>
+            
+            <Component />
+        </div>
+    );
+}
+
+export default Protected;
